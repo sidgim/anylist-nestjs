@@ -3,15 +3,15 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
-  NotFoundException
-} from "@nestjs/common";
-import * as bcrypt from "bcrypt";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { SignupInput } from "../auth/dto/input";
-import { UpdateUserInput } from "./dto/update-user.input";
-import { User } from "./entities/user.entity";
-import { ValidRoles } from "../auth/enums/valid-roles.enum";
+  NotFoundException,
+} from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { SignupInput } from '../auth/dto/input';
+import { UpdateUserInput } from './dto/update-user.input';
+import { User } from './entities/user.entity';
+import { ValidRoles } from '../auth/enums/valid-roles.enum';
 
 @Injectable()
 export class UsersService {
@@ -39,8 +39,8 @@ export class UsersService {
     if (roles.length === 0) return this.usersRepository.find();
     return this.usersRepository
       .createQueryBuilder()
-      .andWhere"ARRAY[roles] && ARRAY[:...roles]"')
-      .setParameter"roles"', roles)
+      .andWhere('ARRAY[roles] && ARRAY[:...roles]')
+      .setParameter('roles', roles)
       .getMany();
   }
 
@@ -63,12 +63,12 @@ export class UsersService {
   async update(
     id: string,
     updateUserInput: UpdateUserInput,
-    updateBy: User
+    updateBy: User,
   ): Promise<User> {
     try {
       const user = await this.usersRepository.preload({
         ...updateUserInput,
-        id
+        id,
       });
       user.lastUpdateBy = updateBy;
       return await this.usersRepository.save(user);
@@ -85,10 +85,10 @@ export class UsersService {
   }
 
   private handleDBErrors(error: any): never {
-    if (error.code === "23505") {
-      throw new BadRequestException(error.detail.replace("Key", ""));
+    if (error.code === '23505') {
+      throw new BadRequestException(error.detail.replace('Key', ''));
     }
     this.logger.error(error);
-    throw new InternalServerErrorException("Please check server logs");
+    throw new InternalServerErrorException('Please check server logs');
   }
 }

@@ -2,83 +2,136 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type List {
+  id: ID!
+  name: String!
+  user: User!
+  listItem: [ListItem!]!
+  items(offset: Int = 0, limit: Int = 10, search: String): [ListItem!]!
+  totalItems: Float!
+}
+
+type ListItem {
+  id: ID!
+  quantity: Float!
+  done: Boolean!
+  list: List!
+  item: Item!
+}
+
 type Item {
-    id: ID!
-    name: String!
-    quantityUnits: String
-    user: User!
+  id: ID!
+  name: String!
+  quantityUnits: String
+  user: User!
+  listItem: [ListItem!]!
 }
 
 type User {
-    id: ID!
-    fullName: String!
-    email: String!
-    roles: [String!]!
-    isActive: Boolean!
-    lastUpdateBy: User
-    itemCount: Int!
-    items(offset: Int = 0, limit: Int = 10, search: String): [Item!]!
+  id: ID!
+  fullName: String!
+  email: String!
+  roles: [String!]!
+  isActive: Boolean!
+  lastUpdateBy: User
+  itemCount: Int!
+  items(offset: Int = 0, limit: Int = 10, search: String): [Item!]!
+  listCount: Int!
+  lists(offset: Int = 0, limit: Int = 10, search: String): [List!]!
 }
 
 type AuthResponse {
-    token: String!
-    user: User!
+  token: String!
+  user: User!
 }
 
 type Query {
-    revalidate: AuthResponse!
-    findAllUsers(roles: [ValidRoles!] = []): [User!]!
-    findOneUser(id: ID!): User!
-    findAllItems(offset: Int = 0, limit: Int = 10, search: String): [Item!]!
-    findOneItem(id: ID!): Item!
+  revalidate: AuthResponse!
+  findAllUsers(roles: [ValidRoles!] = []): [User!]!
+  findOneUser(id: ID!): User!
+  findAllItems(offset: Int = 0, limit: Int = 10, search: String): [Item!]!
+  findOneItem(id: ID!): Item!
+  findAllLists(offset: Int = 0, limit: Int = 10, search: String): [List!]!
+  finOneList(id: ID!): List!
+  findOneListItem(id: String!): ListItem!
 }
 
 """roles permitidos"""
 enum ValidRoles {
-    admin
-    user
-    superUser
+  admin
+  user
+  superUser
 }
 
 type Mutation {
-    signup(signupInput: SignupInput!): AuthResponse!
-    signin(SignInInput: SignInInput!): AuthResponse!
-    updateUser(updateUserInput: UpdateUserInput!): User!
-    blockUser(id: ID!): User!
-    createItem(createItemInput: CreateItemInput!): Item!
-    updateItem(updateItemInput: UpdateItemInput!): Item!
-    removeItem(id: ID!): Item!
+  signup(signupInput: SignupInput!): AuthResponse!
+  signin(SignInInput: SignInInput!): AuthResponse!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  blockUser(id: ID!): User!
+  createItem(createItemInput: CreateItemInput!): Item!
+  updateItem(updateItemInput: UpdateItemInput!): Item!
+  removeItem(id: ID!): Item!
+  createList(createListInput: CreateListInput!): List!
+  updateList(updateListInput: UpdateListInput!): List!
+  removeList(id: ID!): List!
+  createListItem(createListItemInput: CreateListItemInput!): ListItem!
+  updateListItem(updateListItemInput: UpdateListItemInput!): ListItem!
+  removeListItem(id: Int!): ListItem!
 
-    """Execute construction of the BD"""
-    seed: Boolean!
+  """Execute construction of the BD"""
+  seed: Boolean!
 }
 
 input SignupInput {
-    email: String!
-    fullName: String!
-    password: String!
+  email: String!
+  fullName: String!
+  password: String!
 }
 
 input SignInInput {
-    email: String!
-    password: String!
+  email: String!
+  password: String!
 }
 
 input UpdateUserInput {
-    """Example field (placeholder)"""
-    exampleField: Int
-    id: ID!
-    roles: [ValidRoles!]
-    isActive: Boolean
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: ID!
+  roles: [ValidRoles!]
+  isActive: Boolean
 }
 
 input CreateItemInput {
-    name: String!
-    quantityUnits: String
+  name: String!
+  quantityUnits: String
 }
 
 input UpdateItemInput {
-    name: String
-    quantityUnits: String
-    id: ID!
+  name: String
+  quantityUnits: String
+  id: ID!
+}
+
+input CreateListInput {
+  name: String!
+}
+
+input UpdateListInput {
+  name: String
+  id: ID!
+}
+
+input CreateListItemInput {
+  quantity: Float = 0
+  done: Boolean = false
+  listId: ID!
+  itemId: ID!
+}
+
+input UpdateListItemInput {
+  quantity: Float = 0
+  done: Boolean = false
+  listId: ID
+  itemId: ID
+  id: ID!
 }
