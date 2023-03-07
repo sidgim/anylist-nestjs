@@ -5,8 +5,8 @@
 type Item {
     id: ID!
     name: String!
-    quantity: Float!
     quantityUnits: String
+    user: User!
 }
 
 type User {
@@ -15,6 +15,9 @@ type User {
     email: String!
     roles: [String!]!
     isActive: Boolean!
+    lastUpdateBy: User
+    itemCount: Int!
+    items(offset: Int = 0, limit: Int = 10, search: String): [Item!]!
 }
 
 type AuthResponse {
@@ -23,33 +26,31 @@ type AuthResponse {
 }
 
 type Query {
-    items: [Item!]!
-    item(id: ID!): Item!
-    users: [User!]!
-    user(id: ID!): User!
     revalidate: AuthResponse!
+    findAllUsers(roles: [ValidRoles!] = []): [User!]!
+    findOneUser(id: ID!): User!
+    findAllItems(offset: Int = 0, limit: Int = 10, search: String): [Item!]!
+    findOneItem(id: ID!): Item!
+}
+
+"""roles permitidos"""
+enum ValidRoles {
+    admin
+    user
+    superUser
 }
 
 type Mutation {
+    signup(signupInput: SignupInput!): AuthResponse!
+    signin(SignInInput: SignInInput!): AuthResponse!
+    updateUser(updateUserInput: UpdateUserInput!): User!
+    blockUser(id: ID!): User!
     createItem(createItemInput: CreateItemInput!): Item!
     updateItem(updateItemInput: UpdateItemInput!): Item!
     removeItem(id: ID!): Item!
-    blockUser(id: ID!): User!
-    signup(signupInput: SignupInput!): AuthResponse!
-    signin(SignInInput: SignInInput!): AuthResponse!
-}
 
-input CreateItemInput {
-    name: String!
-    quantity: Float!
-    quantityUnits: String
-}
-
-input UpdateItemInput {
-    name: String
-    quantity: Float
-    quantityUnits: String
-    id: ID!
+    """Execute construction of the BD"""
+    seed: Boolean!
 }
 
 input SignupInput {
@@ -61,4 +62,23 @@ input SignupInput {
 input SignInInput {
     email: String!
     password: String!
+}
+
+input UpdateUserInput {
+    """Example field (placeholder)"""
+    exampleField: Int
+    id: ID!
+    roles: [ValidRoles!]
+    isActive: Boolean
+}
+
+input CreateItemInput {
+    name: String!
+    quantityUnits: String
+}
+
+input UpdateItemInput {
+    name: String
+    quantityUnits: String
+    id: ID!
 }

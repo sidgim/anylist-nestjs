@@ -15,19 +15,18 @@ import { ValidRoles } from "../auth/enums/valid-roles.enum";
 
 @Injectable()
 export class UsersService {
-  private logger: Logger = new Logger("UsersService");
+  private logger: Logger = new Logger('UsersService');
 
   constructor(
     @InjectRepository(User)
-    private readonly usersRepository: Repository<User>
-  ) {
-  }
+    private readonly usersRepository: Repository<User>,
+  ) {}
 
   async create(signupInput: SignupInput): Promise<User> {
     try {
       const newUser = this.usersRepository.create({
         ...signupInput,
-        password: bcrypt.hashSync(signupInput.password, 10)
+        password: bcrypt.hashSync(signupInput.password, 10),
       });
 
       return await this.usersRepository.save(newUser);
@@ -38,16 +37,16 @@ export class UsersService {
 
   async findAll(roles: ValidRoles[]): Promise<User[]> {
     if (roles.length === 0) return this.usersRepository.find();
-    return this.usersRepository.createQueryBuilder()
-      .andWhere("ARRAY[roles] && ARRAY[:...roles]")
-      .setParameter("roles", roles)
+    return this.usersRepository
+      .createQueryBuilder()
+      .andWhere"ARRAY[roles] && ARRAY[:...roles]"')
+      .setParameter"roles"', roles)
       .getMany();
   }
 
   async findOneByEmail(email: string): Promise<User> {
     try {
       return await this.usersRepository.findOneByOrFail({ email });
-
     } catch (error) {
       throw new NotFoundException(`${email} not found`);
     }
@@ -56,13 +55,16 @@ export class UsersService {
   async findOneById(id: string): Promise<User> {
     try {
       return await this.usersRepository.findOneByOrFail({ id });
-
     } catch (error) {
       throw new NotFoundException(`${id} not found`);
     }
   }
 
-  async update(id: string, updateUserInput: UpdateUserInput, updateBy: User): Promise<User> {
+  async update(
+    id: string,
+    updateUserInput: UpdateUserInput,
+    updateBy: User
+  ): Promise<User> {
     try {
       const user = await this.usersRepository.preload({
         ...updateUserInput,
